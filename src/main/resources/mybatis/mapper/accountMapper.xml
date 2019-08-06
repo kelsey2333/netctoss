@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="com.itek.netctoss.dao.AccountDao">
+    <select id="selectAllByPage" resultMap="resultMap2">
+        SELECT id,real_name,idcard_no,login_name,status,create_date,last_login_time FROM t_account where 1 = 1
+        <if test="idcardNo != null">
+            and idcard_no like '%${idcardNo}%'
+        </if>
+        <if test="realName != null">
+            and real_name like '%${realName}%'
+        </if>
+        <if test="loginName != null">
+            and login_name like '%${loginName}%'
+        </if>
+        <if test=" status != null ">
+            <if test="!status.equals('-1')">
+                and status like '%${status}%'
+            </if>
+        </if>
+        limit #{start} , #{pageSize}
+    </select>
+
+    <select id="getSelectCount" resultType="int">
+        select count(1) from t_account
+    </select>
+    <!--模糊查询-->
+    <select id="getFuzzyQueryCount" parameterType="com.itek.netctoss.domain.Account" resultType="int">
+        SELECT COUNT(1) FROM t_account
+        <where>
+            2=2
+            <if test="idcardNo != null">
+               and idcard_no LIKE '%${idcardNo}%'
+            </if>
+            <if test="realName != null" >
+               and real_name LIKE '%${realName}%'
+            </if>
+            <if test="loginName != null">
+               and login_name LIKE '%${loginName}%'
+            </if>
+            <if test="status != null ">
+                <if test="!status.equals('-1')">
+                    and status = #{status}
+                </if>
+            </if>
+        </where>
+    </select>
+    <update id="updateAccount" parameterType="com.itek.netctoss.domain.Account">
+        update t_account set status = #{status} where id = #{id}
+    </update>
+    <update id="delStatusById" parameterType="com.itek.netctoss.domain.Account">
+        update t_account set status = #{status} where id = #{id}
+    </update>
+    <insert id="addAccounts" parameterType="com.itek.netctoss.domain.Account">
+        INSERT into t_account ( id, recommender_id, login_name, login_passwd,status, create_date,pause_date ,close_date,real_name, idcard_no,birthdate, gender ,
+        occupation , telephone , email , mailaddress , zipcode , qq , last_login_time , last_login_ip) values
+        ( null,null,#{loginName},#{loginPasswd},#{status},#{createDate},null,null,#{realName},#{idcardNo},#{birthday},#{gender},#{occupation},#{telephone},#{email},#{emailaddress},#{zipcode},#{qq},null,null )
+    </insert>
+    <update id="modiAccount" parameterType="com.itek.netctoss.domain.Account">
+        update t_account set recommender_id = #{recommenderId},real_name = #{realName},gender =#{gender},occupation =#{occupation},telephone =#{telephone},email =#{email},mailaddress =#{emailaddress},zipcode =#{zipcode},qq = #{qq}
+        where id = #{id}
+    </update>
+    <select id="selectByIdCard" parameterType="com.itek.netctoss.domain.Account" resultType="int">
+        select recommender_id from t_account where idcard_no = #{rec}
+    </select>
+    <resultMap id="resultMap2" type="com.itek.netctoss.domain.Account">
+        <result property="id" column="id"/>
+        <result property="recommenderId" column="recommender_id"/>
+        <result property="loginName" column="login_name"/>
+        <result property="loginPasswd" column="login_passwd"/>
+        <result property="status" column="status"/>
+        <result property="createDate" column="create_date"/>
+        <result property="pauseDate" column="pause_date"/>
+        <result property="closeDate" column="close_date"/>
+        <result property="realName" column="real_name"/>
+        <result property="idcardNo" column="idcard_no"/>
+        <result property="birthday" column="birthdate"/>
+        <result property="gender" column="gender"/>
+        <result property="occupation" column="occupution"/>
+        <result property="telephone" column="telephone"/>
+        <result property="email" column="email"/>
+        <result property="emailaddress" column="mailaddress"/>
+        <result property="zipcode" column="zipcode"/>
+        <result property="qq" column="qq"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="lastLoginIp" column="last_login_ip"/>
+    </resultMap>
+</mapper>

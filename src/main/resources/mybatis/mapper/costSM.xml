@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<!--namespace是接口里传的-->
+<mapper namespace="com.itek.netctoss.dao.CostDao">
+    <select id="selectAll" resultMap="resultMap1" parameterType="com.itek.netctoss.domain.CostParam">
+        SELECT  id ,NAME,base_duration,base_cost,unit_cost,creatime,startime,STATUS
+        FROM t_cost
+        <if test="sortName != null">
+            <if test="sortName == 'cost'">
+                ORDER BY base_cost
+            </if>
+            <if test="sortName == 'duration'">
+                ORDER BY base_duration
+            </if>
+            <if test="costSort == 'asc'">
+                asc
+            </if>
+            <if test="costSort == 'desc'">
+                desc
+            </if>
+        </if>
+                limit  #{start},#{PAGE_SIZE}
+    </select>
+    <!--查询所有页数-->
+    <select id="getSelectCount" resultType="int">
+        select count(1) from t_cost
+    </select>
+    <!--修改 删除 状态-->
+    <update id="modiStatus"  parameterType="com.itek.netctoss.domain.Cost">
+        update t_cost set status = #{status} , startime = #{startime} where id = #{id}
+    </update>
+    <!--增加-->
+    <insert id="insertCost" parameterType="com.itek.netctoss.domain.Cost">
+        insert into t_cost (name, base_duration, base_cost,unit_cost, status,descr,creatime,startime,costtype )
+         values (#{name},#{baseDuration},#{baseCost},#{unitCost}, '0' ,#{descr},#{creatime},null,#{costtype})
+    </insert>
+    <!--查询costtype-->
+    <select id="selectCostType" resultType="string" parameterType="com.itek.netctoss.domain.Cost">
+        select costtype from t_cost where id = #{id}
+    </select>
+    <!--更新数据-->
+    <update id="updateCost" parameterType="com.itek.netctoss.domain.Cost">
+        update t_cost set name = #{name}, base_duration = #{baseDuration} , base_cost = #{baseCost} , unit_cost = #{unitCost} , descr = #{descr} , costtype = #{costtype} where id = #{id}
+    </update>
+
+    <resultMap id="resultMap1" type="com.itek.netctoss.domain.Cost">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="baseDuration" column="base_duration"/>
+        <result property="baseCost" column="base_cost"/>
+        <result property="unitCost" column="unit_cost"/>
+        <result property="creatime" column="creatime"/>
+        <result property="startime" column="startime"/>
+        <result property="status" column="status"/>
+    </resultMap>
+</mapper>

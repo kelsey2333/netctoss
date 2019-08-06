@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="com.itek.netctoss.dao.AdminDao">
+    <select id="selectUserByName" parameterType="com.itek.netctoss.domain.User" resultType="com.itek.netctoss.domain.User">
+        select * from t_admin where name = #{name}
+    </select>
+    <select id="selectMenuById" resultType="com.itek.netctoss.domain.Menu" parameterType="com.itek.netctoss.domain.User">
+        SELECT m.* FROM t_admin a
+        LEFT JOIN t_admin_role ar
+        ON a.id = ar.admin_id
+        LEFT JOIN t_role_menu rm
+        ON ar.role_id = rm.role_id
+        LEFT JOIN t_menu m
+        ON m.id = rm.menu_id
+        where a.id = #{id}
+        group by m.id
+    </select>
+</mapper>

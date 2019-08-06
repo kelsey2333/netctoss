@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--创建两个bean对象相当于加载了注解-->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"></bean>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"></bean>
+    <!--启动了注解就要在文档中扫描-->
+    <context:component-scan base-package="com.itek.netctoss.controller"></context:component-scan>
+    <context:component-scan base-package="com.itek.netctoss.service"></context:component-scan>
+    <!--获取到的ModeAndView进行解析  ViewResolver-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!--拦截所有请求
+            /*: list.do： 拦截根目录后面的一层目录
+            /**: 拦截所有的请求
+            cost/list.do-->
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/captcha.do"/>
+            <mvc:exclude-mapping path="/login.do"/>
+            <mvc:exclude-mapping path="/checkLogin.do"/>
+            <mvc:exclude-mapping path="/static/images/**"/>
+            <mvc:exclude-mapping path="/static/styles/**"/>
+            <bean class="com.itek.netctoss.interceptor.LoginInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!--请求不走servlet直接去找静态资源路径-->
+    <mvc:resources mapping="/static/**" location="/static/"/>
+
+
+    <!--创建sqlSessionFactoryBean-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="datasouces"/>
+        <property name="configLocation" value="classpath:mybatis/sqlMapConfig.xml"/>
+        <property name="mapperLocations" value="classpath:mybatis/mapper/*.xml"/>
+    </bean>
+    <!--创建号sqlSessionFactoryBean后扫描所有到对象-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.itek.netctoss.dao"/>
+    </bean>
+
+    <bean id="datasouces" class="org.apache.commons.dbcp.BasicDataSource"
+          p:driverClassName="com.mysql.jdbc.Driver"
+          p:url="jdbc:mysql://localhost:3306/wpzhang?useUnicode=true&amp;characterEncoding=utf-8"
+          p:username="root"
+          p:password="ITEK"
+    />
+</beans>
